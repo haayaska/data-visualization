@@ -5,13 +5,16 @@ import numpy as np
 import os
 
 # 1. Carga de datos
-df_shows = pd.read_csv('../visualizaciones/tv_show_links.csv')
-df_critics = pd.read_csv('../visualizaciones/critic_reviews.csv')
-df_audience = pd.read_csv('../visualizaciones/audience_reviews.csv')
+df_shows = pd.read_csv('../datasets/tv_show_links.csv')
+df_critics = pd.read_csv('../datasets/critic_reviews.csv')
+df_audience = pd.read_csv('../datasets/audience_reviews.csv')
 
-# 2. Limpieza de puntajes, solo dejamos valores necesarios
-df_shows['Critic Score'] = df_shows['Critic Score'].str.replace('%','').astype(float)
-df_shows['Audience Score'] = df_shows['Audience Score'].str.replace('%','').astype(float)
+# 2. Limpieza de puntajes, para dejar solo valores validos
+df_shows['Critic Score'] = pd.to_numeric(df_shows['Critic Score'].str.replace('%',''), errors='coerce')
+df_shows['Audience Score'] = pd.to_numeric(df_shows['Audience Score'].str.replace('%',''), errors='coerce')
+
+# Eliminar las filas que quedaron con valores nulos para que no den error al graficar
+df_shows = df_shows.dropna(subset=['Critic Score', 'Audience Score'])
 
 # 3. Procesamiento de Sentimiento (Criterio 2)
 def get_avg_sentiment(show_name):
