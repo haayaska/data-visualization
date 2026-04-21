@@ -13,8 +13,10 @@ df_audience = pd.read_csv('../datasets/audience_reviews.csv')
 df_shows['Critic Score'] = pd.to_numeric(df_shows['Critic Score'].str.replace('%',''), errors='coerce')
 df_shows['Audience Score'] = pd.to_numeric(df_shows['Audience Score'].str.replace('%',''), errors='coerce')
 
+
 # Eliminar las filas que quedaron con valores nulos para que no den error al graficar
 df_shows = df_shows.dropna(subset=['Critic Score', 'Audience Score'])
+
 
 # 3. Procesamiento de Sentimiento (Criterio 2)
 def get_avg_sentiment(show_name):
@@ -29,10 +31,12 @@ df_plot = df_shows[df_shows['Show'].isin(sample_shows)].drop_duplicates('Show').
 df_plot['Sentiment'] = df_plot['Show'].apply(get_avg_sentiment)
 df_plot = df_plot.sort_values('Audience Score')
 
+
 # 4. Visualización: Dumbbell Plot
 fig, ax = plt.subplots(figsize=(10, 7))
 cmap = plt.cm.RdYlGn # Rojo (Negativo) a Verde (Positivo)
 norm = plt.Normalize(df_plot['Sentiment'].min(), df_plot['Sentiment'].max())
+
 
 for i, (idx, row) in enumerate(df_plot.iterrows()):
     color = cmap(norm(row['Sentiment']))
@@ -43,6 +47,7 @@ for i, (idx, row) in enumerate(df_plot.iterrows()):
     ax.scatter(row['Audience Score'], i, color='black', s=100, label='Audiencia' if i==0 else "", zorder=3)
     # Texto de Sentimiento (Criterio 2)
     ax.text(102, i, f"Sent: {row['Sentiment']:.2f}", va='center', color=color, fontweight='bold')
+
 
 ax.set_yticks(range(len(df_plot)))
 ax.set_yticklabels(df_plot['Show'])
